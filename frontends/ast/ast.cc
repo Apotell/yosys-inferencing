@@ -1628,6 +1628,12 @@ std::string AstModule::derive_common(RTLIL::Design *design, const dict<RTLIL::Id
 	return modname;
 }
 
+void AstModule::makeblackbox()
+{
+	Module::makeblackbox();
+	ast->attributes[ID::blackbox] = AstNode::mkconst_int(1, false);
+}
+
 RTLIL::Module *AstModule::clone() const
 {
 	AstModule *new_mod = new AstModule;
