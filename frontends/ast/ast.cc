@@ -294,11 +294,14 @@ void AstNode::dumpAst(FILE *f, std::string indent) const
 	}
 
 	if (!str.empty())
+	{
 		fprintf(f, " str='%s'", str.c_str());
+		std::cout << std::endl << str << std::endl;
+	}
 	if (!bits.empty()) {
 		fprintf(f, " bits='");
 		for (size_t i = bits.size(); i > 0; i--)
-			fprintf(f, "%c", bits[i-1] == State::S0 ? '0' :
+			fprintf	(f, "%c", bits[i-1] == State::S0 ? '0' :
 					bits[i-1] == State::S1 ? '1' :
 					bits[i-1] == RTLIL::Sx ? 'x' :
 					bits[i-1] == RTLIL::Sz ? 'z' : '?');
@@ -956,7 +959,11 @@ static AstModule* process_module(AstNode *ast, bool defer, AstNode *original_ast
 	log_assert(ast->type == AST_MODULE || ast->type == AST_INTERFACE);
 
 	if (defer)
-		log("Storing AST representation for module `%s'.\n", ast->str.c_str());
+	{
+      log("Storing AST representation for module `%s'.\n", ast->str.c_str());
+	//   ast->dumpAst(NULL, "    ");
+	//   ast->dumpVlog(NULL, "    ");
+	}		
 	else if (!quiet) {
 		log("Generating RTLIL representation for module `%s'.\n", ast->str.c_str());
 	}
@@ -1163,6 +1170,7 @@ static AstModule* process_module(AstNode *ast, bool defer, AstNode *original_ast
 void AST::process(RTLIL::Design *design, AstNode *ast, bool dump_ast1, bool dump_ast2, bool no_dump_ptr, bool dump_vlog1, bool dump_vlog2, bool dump_rtlil,
 		bool nolatches, bool nomeminit, bool nomem2reg, bool mem2reg, bool noblackbox, bool lib, bool nowb, bool noopt, bool icells, bool pwires, bool nooverwrite, bool overwrite, bool defer, bool autowire)
 {
+
 	current_ast = ast;
 	current_ast_mod = nullptr;
 	flag_dump_ast1 = dump_ast1;

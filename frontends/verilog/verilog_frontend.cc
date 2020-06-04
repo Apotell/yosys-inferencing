@@ -457,7 +457,7 @@ struct VerilogFrontend : public Frontend {
 		AST::set_line_num = &frontend_verilog_yyset_lineno;
 		AST::get_line_num = &frontend_verilog_yyget_lineno;
 
-		current_ast = new AST::AstNode(AST::AST_DESIGN);
+		current_ast = new AST::AstNode(AST::AST_DESIGN);		
 
 		lexin = f;
 		std::string code_after_preproc;
@@ -467,15 +467,19 @@ struct VerilogFrontend : public Frontend {
 			if (flag_ppdump)
 				log("-- Verilog code after preprocessor --\n%s-- END OF DUMP --\n", code_after_preproc.c_str());
 			lexin = new std::istringstream(code_after_preproc);
-		}
+		}		
 
 		// make package typedefs available to parser
-		add_package_types(pkg_user_types, design->verilog_packages);
+		add_package_types(pkg_user_types, design->verilog_packages);	        
 
-		frontend_verilog_yyset_lineno(1);
-		frontend_verilog_yyrestart(NULL);
+		frontend_verilog_yyset_lineno(1);		
+		frontend_verilog_yyrestart(NULL);	
+		//////////////////////////////////////////	
 		frontend_verilog_yyparse();
-		frontend_verilog_yylex_destroy();
+		////////////////////////////////////////
+		current_ast->dumpAst(NULL, "    ");
+		frontend_verilog_yylex_destroy();	
+		
 
 		for (auto &child : current_ast->children) {
 			if (child->type == AST::AST_MODULE)
@@ -483,9 +487,11 @@ struct VerilogFrontend : public Frontend {
 					if (child->attributes.count(attr) == 0)
 						child->attributes[attr] = AST::AstNode::mkconst_int(1, false);
 		}
+		
 
 		if (flag_nodpi)
 			error_on_dpi_function(current_ast);
+		
 
 		AST::process(design, current_ast, flag_dump_ast1, flag_dump_ast2, flag_no_dump_ptr, flag_dump_vlog1, flag_dump_vlog2, flag_dump_rtlil, flag_nolatches,
 				flag_nomeminit, flag_nomem2reg, flag_mem2reg, flag_noblackbox, lib_mode, flag_nowb, flag_noopt, flag_icells, flag_pwires, flag_nooverwrite, flag_overwrite, flag_defer, default_nettype_wire);
